@@ -1,0 +1,59 @@
+//Use the open prices to train the neural network,if appied to other subjects
+//just change the subject and the various lengths of series and apply.
+
+library(neuralnet)
+
+//make sure everything is a time series. 
+UCD=UCD[1:1570,]
+
+
+//The last 2 rows are NAs thus removed.
+Open=as.ts(UCD$×îÐÂ)
+
+//Lag the time series
+Open1=lag(Open,1)
+Open2=lag(Open,2)
+Open3=lag(Open,3)
+Open5=lag(Open,5)
+Open7=lag(Open,7)
+Open12=lag(Open,12)
+
+//Then combine the lagged time series into a matrix
+HistOp=cbind(Open,Open1,Open2,Open3,Open5,Open7,Open12)
+
+//Remove all NAs from lagged time series matrix.
+HistOp=HistOp[13:1440,]
+
+//Set training set from April 2012 up to the last trading day of 2017 and testing set from first day of 2018 to April 2018
+train=HistOp[1428:71,]
+test=HistOp[71:1,]
+maxs <- apply(HistOp, 2, max)
+maxs <- apply(HistOp, 2, max)
+mins <- apply(HistOp, 2, min)
+scaled <- as.data.frame(scale(HistOp, center = mins, scale = maxs - mins))
+train_ <- scaled[1428:71,]
+test_ <- scaled[70:1,]
+
+//Training the neural network. You could structure the neural network to your preference
+n <- names(train_)
+f <- as.formula(paste("Open ~", paste(n[!n %in% "Open"], collapse = " + ")))
+nn <- neuralnet(f,data=train_,hidden=c(12,7,5,3),linear.output=T)
+
+//Plotting neural network
+plot(nn)
+
+//Finding the neural network's prediction and the MSE
+pr.nn <- compute(nn,test_[,2:7])
+data=UCD$¿ªÅÌ[1:1428]                                         <---- This line needs revision.
+pr.nn_ <- pr.nn$net.result*(max(data)-min(data))+min(data)
+test.r <- (test_$Open)*(max(data)-min(data))+min(data)
+MSE.nn <- sum((test.r - pr.nn_)^2)/nrow(test_)
+
+//Print the MSE
+print(paste(MSE.nn))
+
+//Plotting real output (real exchange rate) against predicted output (predicted exchange rate)
+plot(data[70:1],pr.nn_,col='red',main='Real vs predicted NN',pch=18,cex=0.7)
+abline(0,1)
+plot(data[70:1],pr.nn_,col='red',main='Real vs predicted NN',pch=18,cex=0.7)
+
