@@ -8,7 +8,7 @@ UCD=UCD[1:1570,]
 
 
 //The last 2 rows are NAs thus removed.
-Open=as.ts(UCD$×îÐÂ)
+Open=as.ts(UCD$×îÐÂ)                                         <---- This line needs revision.
 
 //Lag the time series
 Open1=lag(Open,1)
