@@ -8,8 +8,8 @@ apply(data,2,function(x) sum(is.na(x)))
 
 //Randomly splitting data into train and test set. This is customizable.
 index <- sample(1:nrow(data),round(0.75*nrow(data)))
-train <- data[,1244:44]
-test <- data[,43:1]
+train <- data[1244:44,]
+test <- data[43:1,]
 
 //Fitting a linear regression model and testing on the test set, as well as calculating the mean square error (of the linear model).
 lm.fit <- glm(DEXJPUS~., data=train)
