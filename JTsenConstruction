@@ -1,0 +1,57 @@
+library(neuralnet)
+
+//DEXJPUS5 is a csv file with USD/JPY exchange rates from April 2013 to April 2018
+data <- read.csv("DEXJPUS5.csv", header=T)
+
+//Checking that no data points are missing.
+apply(data,2,function(x) sum(is.na(x)))
+
+//Randomly splitting data into train and test set. This is customizable.
+index <- sample(1:nrow(data),round(0.75*nrow(data)))
+train <- data[index,]
+test <- data[-index,]
+
+//Fitting a linear regression model and testing on the test set, as well as calculating the mean square error (of the linear model).
+lm.fit <- glm(DEXJPUS~., data=train)
+summary(lm.fit)
+pr.lm <- predict(lm.fit,test)
+MSE.lm <- sum((pr.lm - test$medv)^2)/nrow(test)
+
+//Scaling and splitting data with min-max normalization.
+maxs <- apply(data, 2, max)
+mins <- apply(data, 2, min)
+scaled <- as.data.frame(scale(data, center = mins, scale = maxs - mins))
+train_ <- scaled[index,]
+test_ <- scaled[-index,]
+
+//Training the neural network and setting the amounts of neurons (customizable).
+n <- names(train_)
+f <- as.formula(paste("DEXJPUS ~", paste(n[!n %in% "DEXJPUS"], collapse = " + ")))
+nn <- neuralnet(f,data=train_,hidden=c(5,3),linear.output=T)
+
+//Plottng the neural network.
+plot(nn)
+
+//Predicting exchange rates with lagged time series and calculating the mean square error (of the network output).
+pr.nn <- compute(nn,test_[,2:6])
+pr.nn_ <- pr.nn$net.result*(max(data$DEXJPUS)-min(data$DEXJPUS))+min(data$DEXJPUS)
+test.r <- (test_$DEXJPUS)*(max(data$DEXJPUS)-min(data$DEXJPUS))+min(data$DEXJPUS)
+MSE.nn <- sum((test.r - pr.nn_)^2)/nrow(test_)
+
+//Comparing the mean square error of the linear model and the neural network - this could be adjusted by adjusting 
+//the training and testing split done randomly above.
+print(paste(MSE.lm,MSE.nn))
+
+//Plotting real exchange rate against predicted exchange rates produced by both the neural network and linear model.
+par(mfrow=c(1,2))
+plot(test$medv,pr.nn_,col='red',main='Real vs predicted NN',pch=18,cex=0.7)
+plot(test$DEXJPUS,pr.nn_,col='red',main='Real vs predicted NN',pch=18,cex=0.7)
+abline(0,1,lwd=2)
+legend('bottomright',legend='NN',pch=18,col='red', bty='n')
+plot(test$DEXJPUS,pr.lm,col='blue',main='Real vs predicted lm',pch=18, cex=0.7)
+abline(0,1,lwd=2)
+legend('bottomright',legend='LM',pch=18,col='blue', bty='n', cex=.95)
+plot(test$DEXJPUS,pr.nn_,col='red',main='Real vs predicted NN',pch=18,cex=0.7)
+points(test$DEXJPUS,pr.lm,col='blue',pch=18,cex=0.7)
+abline(0,1,lwd=2)
+legend('bottomright',legend=c('NN','LM'),pch=18,col=c('red','blue'))
