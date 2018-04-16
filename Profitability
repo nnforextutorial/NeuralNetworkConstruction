@@ -10,5 +10,13 @@ for (i in 1:testset/7) {
 //Print profit list.
 profitlist
 
+
+
+//Testing the result output of neural network
+temp_test <- subset(test, select = c("lag1", "lag2", "lag3", "lag4", "lag5"))
+head(temp_test)
+nn.results <- compute(nn, temp_test)
+
+
 //Further actions required includes: incorporating transaction fees. Extracting "profits" from profitlist and finalizing 
 //percent profit for the buy and hold method (as a control strategy).
