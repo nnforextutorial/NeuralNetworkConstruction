@@ -1,0 +1,14 @@
+//Buy and hold method (buy at day 1 closing price, sell on day 7 closing price).
+profitlist = list()
+for (i in 1:testset/7) {
+    profit <- test$exchangerate[i+6] - test$exchangerate[i]
+    name <- paste('item:',i,sep='')
+    tmp <- list(profits=profit)
+    profitlist[[name]] <- tmp
+}
+
+//Print profit list.
+profitlist
+
+//Further actions required includes: incorporating transaction fees. Extracting "profits" from profitlist and finalizing 
+//percent profit for the buy and hold method (as a control strategy).
