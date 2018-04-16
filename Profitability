@@ -30,4 +30,5 @@ table(actual,prediction)
 
 
 //Further actions required includes: incorporating transaction fees. Extracting "profits" from profitlist and finalizing 
-//percent profit for the buy and hold method (as a control strategy).
+//percent profit for the buy and hold method (as a control strategy). Utilizing a for-loop to calculate actual profitability
+//for the neural network results to finalize percent profit for the neural network trading strategies.
