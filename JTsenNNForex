@@ -21,8 +21,8 @@ MSE.lm <- sum((pr.lm - test$medv)^2)/nrow(test)
 maxs <- apply(data, 2, max)
 mins <- apply(data, 2, min)
 scaled <- as.data.frame(scale(data, center = mins, scale = maxs - mins))
-train_ <- scaled[index,]
-test_ <- scaled[-index,]
+train_ <- scaled[1244:44,]
+test_ <- scaled[43:1,]
 
 //Training the neural network and setting the amounts of neurons (customizable).
 n <- names(train_)
