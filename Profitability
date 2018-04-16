@@ -10,7 +10,7 @@ for (i in 1:testset/7) {
 //Print profit list.
 profitlist
 
-
+-----------------------------------------------------------------------------------------------For Neural Network Profitability
 
 //Testing the result output of neural network
 temp_test <- subset(test, select = c("lag1", "lag2", "lag3", "lag4", "lag5"))
